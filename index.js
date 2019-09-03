@@ -14,5 +14,33 @@ server.route('/api/users')
         let user = req.body;
         if(!user.name || !user.bio){
             res.status(400).json({ errorMessage: "Name or bio missing - please try again."});
-        } 
-    })
+        }
+        else{
+            db.insert(user)
+            .then(response => {
+                console.log(response);
+                res.status(201).json(response);
+            })
+            .catch(e => {
+              console.log(e);
+              res.status(500).json({ error: "Error inserting user into database." })
+            });
+        }
+      });
+    
+    app.route('/api/users/:id')
+      .get((req, res) => {
+        console.log(req.params.id);
+        let id = req.params.id;
+        db.findById(id)
+          .then(response => {
+            console.log(response);
+            if(response) res.status(200).json(response);
+            else res.status(404).json({ message: "User unavailable." });
+          })
+          .catch(e => {
+            console.log(e);
+            res.status(500).json({ error: "User unavailable." });
+          })
+      })
+     
